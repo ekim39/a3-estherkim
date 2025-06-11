@@ -93,11 +93,37 @@ const deleteItem = async function(idNum) {
   window.location.reload(true);
 }
 
+const login = async function(event) {
+  event.preventDefault();
+  
+  const username = document.querySelector( "#username" ),
+        password = document.querySelector( "#password" ),
+        json = { "username": username.value, "password": password.value },
+        body = JSON.stringify( json )
+
+  const response = await fetch( "/login", {
+    method:"POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: body
+  }).then( function(serverresponse) {
+      if (serverresponse.redirected) {
+        window.location.href = serverresponse.url;
+      } else {
+        alert("Oops, something went wrong!");
+      }
+  })
+}
+
 // when window is loaded this will run first
 window.onload = function() {
-  if (window.location.pathname === "/" || window.location.pathname === "/index.html") {
+  if (window.location.pathname === "/" || window.location.pathname === "/index") {
     const button = document.getElementById("sending");
     button.onclick = submit; // this will call the function submit upon the button being clicked
+  } else if (window.location.pathname === "/login") {
+    const loggingin = document.getElementById("forlogin");
+    loggingin.onclick = login;
   }
   
 };

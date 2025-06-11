@@ -2,12 +2,31 @@ require('dotenv').config();
 
 const express    = require('express'),
       { MongoClient, ObjectId } = require("mongodb"),
+      hbs = require('express-handlebars').engine,
       app        = express()
-      //spendingList     = []
+
+app.engine( "handlebars", hbs() );
+app.set( "view engine", "handlebars" )
+app.set( "views", "./views" )
 
 app.use( express.static( 'public' ) )
 app.use( express.static( 'views'  ) )
 app.use( express.json() )
+
+// middleware for authenticating users
+/* app.use( function (req, res, next) {
+    if (req.session.login === true) {
+        next();
+    } else {
+        res.render('login', { msg:"Login failed, please try again", layout:false });
+    }
+}) */
+
+// cookie middleware
+/* app.use( cookie({
+    name: "session",
+    keys: ["key1", "key2"]
+})) */
 
 
 const uri = `mongodb+srv://${process.env.USERNAME}:${process.env.PASS}@${process.env.HOST}/?retryWrites=true&w=majority&appName=a3-Webware`;
@@ -22,13 +41,15 @@ const uri = `mongodb+srv://${process.env.USERNAME}:${process.env.PASS}@${process
 }); */
 const client = new MongoClient(uri);
 
-let collection;
+let itemCollection;
+let usersCollection;
 
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect()
-    collection = await client.db("spendingDatabase").collection("collection0")
+    itemCollection = await client.db("spendingDatabase").collection("collection0")
+    usersCollection = await client.db("spendingDatabase").collection("users")
     // Send a ping to confirm a successful connection
     await client.db("spendingDatabase").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
@@ -37,48 +58,60 @@ async function run() {
   }
 }
 run()
-//run().catch(console.dir);
 
 app.use( (req,res,next) => {
-    if( collection !== null ) {
+    if( itemCollection !== null ) {
         next()
     }else{
         res.status( 503 ).send()
     }
 });
 
+
 // adding item to database
-app.post( '/add', async (req,res) => {
+app.post( "/add", async (req, res) => {
     insertingItem = req.body;
     insertingItem.date = getDate();
     insertingItem.moneySaved = calcMoneySaved( parseFloat(insertingItem.price), parseFloat(insertingItem.discount) );
-    const result = await collection.insertOne( insertingItem );
+    const result = await itemCollection.insertOne( insertingItem );
     res.set('Content-Type', 'application/json');
     res.status(200);
     res.json( result );
-});
+})
 
-// middleware for authenticating users
-/* app.use( function (req, res, next) {
-    if (req.session.login === true) {
-        next();
+app.get( "/login", async (req, res) => {
+    /* if (req.session.login === true) {
+        res.render('index', {msg:"You  have successfully logged in!", layout:false});
     } else {
-        res.render('login', { msg:"Login failed, please try again", layout:false });
-    }
-}) */
+        res.render('login.html', {msg:"Login to access spending list!", layout:false});
+    } */
+    res.render('login', {msg:"Login to access spending list!", layout:false});
+})
 
-app.get( "/index.html", (req, res) => {
+app.post( "/login", async (req, res) => {
+    const userExistsCount = await usersCollection.countDocuments({ username: req.body.username }, { password: req.body.password });
+    if (userExistsCount !== 0) {
+        //req.session.login = true
+        res.status(200);
+        res.redirect('index');
+    } else {
+        res.status(400);
+        res.render('login', {msg:"Login was unsuccessful, please try again!", layout:false});
+    }
+})
+
+app.get( "/index", (req, res) => {
     res.render('index', {msg:"You  have successfully logged in!", layout:false});
 })
 
-app.get( "/spending-list.html", (req,res) => {
+app.get( "/spending-list", (req,res) => {
     //res.set('Cache-Control', 'no-cache');
-    res.render('spending-list.html')
+    res.render('spending-list')
 })
 
 app.get("/obtainData.json", async (req, res) => {
     const query = {}
-    const allItems = await collection.find(query).toArray();
+    const allItems = await itemCollection.find(query).toArray();
     res.set('Content-Type', 'application/json');
     //res.set('Cache-Control', 'no-cache');
     res.status(200);
@@ -87,7 +120,7 @@ app.get("/obtainData.json", async (req, res) => {
 
 // assumes req.body takes form { _id:5d91fb30f3f81b282d7be0dd } etc.
 app.delete("/deleteItem", async (req, res) => {
-    const result = await collection.deleteOne({ 
+    const result = await itemCollection.deleteOne({ 
         _id:new ObjectId( req.body._id )
       });
     //res.set('Cache-Control', 'no-cache');
