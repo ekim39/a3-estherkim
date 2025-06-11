@@ -3,6 +3,7 @@ require('dotenv').config();
 const express    = require('express'),
       { MongoClient, ObjectId } = require("mongodb"),
       hbs = require('express-handlebars').engine,
+      cookieSession = require('cookie-session'),
       app        = express()
 
 app.engine( "handlebars", hbs() );
@@ -13,14 +14,30 @@ app.use( express.static( 'public' ) )
 app.use( express.static( 'views'  ) )
 app.use( express.json() )
 
+app.use(cookieSession({
+    name: 'session',
+    keys: ['key2', 'key3'],
+    loggedIn: false,
+    maxAge: 24 * 60 * 60 * 1000 // 1 day
+  }));
+
 // middleware for authenticating users
 /* app.use( function (req, res, next) {
-    if (req.session.login === true) {
+    if (req.session.loggedIn === true) {
         next();
     } else {
+        res.status(403);
         res.render('login', { msg:"Login failed, please try again", layout:false });
     }
 }) */
+function authenticate(req, res, next) {
+    if (req.session.loggedIn === true) {
+        next();
+    } else {
+        res.status(403);
+        res.render('login', { msg:"Login failed, please try again", layout:false });
+    }
+}
 
 // cookie middleware
 /* app.use( cookie({
@@ -79,7 +96,7 @@ app.post( "/add", async (req, res) => {
     res.json( result );
 })
 
-app.get( "/login", async (req, res) => {
+app.get( "/login", authenticate, async (req, res) => {
     /* if (req.session.login === true) {
         res.render('index', {msg:"You  have successfully logged in!", layout:false});
     } else {
@@ -88,28 +105,40 @@ app.get( "/login", async (req, res) => {
     res.render('login', {msg:"Login to access spending list!", layout:false});
 })
 
+app.get("/logout", async (req, res) => {
+    req.session.loggedIn = false;
+    req.session.userId = null;
+    res.render('login', {msg:"Logged out successfully!", layout:false});
+})
+
 app.post( "/login", async (req, res) => {
     const userExistsCount = await usersCollection.countDocuments({ username: req.body.username }, { password: req.body.password });
     if (userExistsCount !== 0) {
-        //req.session.login = true
+        req.session.loggedIn = true;
+        const currentuser = usersCollection.find({ username: req.body.username }, { password: req.body.password }).limit(1);
+        req.session.userId = currentuser._id;
         res.status(200);
         res.redirect('index');
     } else {
-        res.status(400);
+        res.status(401);
         res.render('login', {msg:"Login was unsuccessful, please try again!", layout:false});
     }
 })
 
-app.get( "/index", (req, res) => {
+app.get( "/index", authenticate, (req, res) => {
     res.render('index', {msg:"You  have successfully logged in!", layout:false});
 })
 
-app.get( "/spending-list", (req,res) => {
-    //res.set('Cache-Control', 'no-cache');
-    res.render('spending-list')
+app.get( "/", authenticate, (req, res) => {
+    res.render('index', {msg:"You  have successfully logged in!", layout:false});
 })
 
-app.get("/obtainData.json", async (req, res) => {
+app.get( "/spending-list", authenticate, (req,res) => {
+    //res.set('Cache-Control', 'no-cache');
+    res.render('spending-list', {layout: false});
+})
+
+app.get("/obtainData.json", authenticate, async (req, res) => {
     const query = {}
     const allItems = await itemCollection.find(query).toArray();
     res.set('Content-Type', 'application/json');
@@ -119,7 +148,7 @@ app.get("/obtainData.json", async (req, res) => {
 })
 
 // assumes req.body takes form { _id:5d91fb30f3f81b282d7be0dd } etc.
-app.delete("/deleteItem", async (req, res) => {
+app.delete("/deleteItem", authenticate, async (req, res) => {
     const result = await itemCollection.deleteOne({ 
         _id:new ObjectId( req.body._id )
       });
