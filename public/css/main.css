@@ -1,0 +1,96 @@
+body {
+  background: #F4C6DF;
+  color: #3A2F23;
+  font-family: "Arvo", serif;
+  font-weight: 400;
+  font-style: normal;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+nav {
+  position: sticky;
+  top: 0;
+  background-color: #95C4CF;
+  border: 10px solid, #95C4CF;
+  text-align: right;
+  font-family: "Arvo", serif;
+  font-weight: 400;
+  font-style: normal;
+  padding-right: 10px;
+  padding-left: 10px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  
+}
+
+a {
+  background-color: #A38AC2;
+  border: 10px solid, #A38AC2;
+  text-decoration-color: aliceblue;
+  color:aliceblue;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+th {
+  padding-top: 10px;
+  padding-bottom: 10px;
+  padding-left: 30px;
+  padding-right: 30px;
+}
+
+td {
+  padding-top: 10px;
+  padding-bottom: 10px;
+  padding-left: 30px;
+  padding-right: 30px;
+}
+
+table, th, td {
+  border: 2px solid, #A38AC2;
+  text-align: center;
+}
+
+.deleteButton {
+  color: #DB4846;
+}
+
+#sending {
+  color: #A38AC2;
+  padding: 8px;
+  width: 30%;
+}
+
+label {
+  margin: 10px;
+}
+
+input {
+  padding-left: 10px;
+  padding-right: 10px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  margin: 10px;
+  width: 30%;
+}
+
+select {
+  padding-left: 10px;
+  padding-right: 10px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  margin: 10px;
+  width: 30%;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+}

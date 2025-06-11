@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>CS4241 Assignment 2</title>
+    <meta charset="utf-8">
+    <script src="js/main.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Arvo:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/main.css">
+    
+    
+    <!-- get rid of favicon error -->
+    <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+  </head>
+  <nav>
+    <a href="/index.html">Add Item to List</a>
+  </nav>
+  <body>
+    <h1>Spending Tracker</h1>
+    <table>
+        <thead>
+            <th>Date</th>
+            <th>Item</th>
+            <th>Price Paid</th>
+            <th>Discount</th>
+            <th>Money Saved</th>
+            <th>Category</th>
+            <th>Note</th>
+            <th>Delete</th>
+        </thead>
+        <tbody id="itemtablebody"><script type="text/javascript">populateTable();</script></tbody>
+    </table>
+  </body>
+</html>
