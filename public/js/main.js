@@ -60,12 +60,21 @@ const populateTable = async function() {
       tcategory.innerHTML = item.category;
       let tnote = row.insertCell(6);
       tnote.innerHTML = item.note;
+
+      const editbutton = document.createElement('button');
+      editbutton.textContent = "Edit Item";
+      editbutton.value = item._id;
+      editbutton.className = "editButton";
+      editbutton.onclick = () => editPage(item._id);
+      let forEditing = row.insertCell(7);
+      forEditing.appendChild(editbutton);
+
       const abutton = document.createElement('button');
       abutton.textContent = "Delete Item";
       abutton.value = item._id;
       abutton.className = "deleteButton";
       abutton.onclick = () => deleteItem(item._id);
-      let forDeleting = row.insertCell(7);
+      let forDeleting = row.insertCell(8);
       forDeleting.appendChild(abutton);
     });
   });
@@ -90,6 +99,44 @@ const deleteItem = async function(idNum) {
     }
   })
   window.location.reload(true);
+}
+
+const getItem = async function() {
+
+  await fetch( `getItem`, {
+    method: "GET",
+  }).then( function(serverresponse) {
+    if (serverresponse.status !== 200) {
+      alert("Oops, something went wrong!")
+    }
+    receivedData = serverresponse.json()
+    return receivedData
+  }).then(function(data) {
+    const item = document.getElementById("eitem");
+    item.value = data.item;
+    const price = document.getElementById( "eprice" );
+    price.value = data.price;
+    const discount = document.getElementById( "ediscount" );
+    discount.value = data.discount;
+    const note = document.getElementById("enote");
+    note.value = data.note;
+  })
+}
+
+const editPage = async function(idNum) {
+
+  await fetch( `edit?itemID=${idNum}`, {
+    method: "GET",
+  }).then( function(serverresponse) {
+    if (serverresponse.status !== 200) {
+      alert("Oops, something went wrong and the item cannot be edited!")
+    } else {
+      getItem();
+      window.location.href = serverresponse.url;  
+    }
+  })
+  console.log("Hello")
+  //window.location.reload(true);
 }
 
 const login = async function(event) {

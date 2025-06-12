@@ -163,9 +163,22 @@ app.get("/obtainData.json", authenticate, async (req, res) => {
     const query = {itemUser: req.session.userID};
     const allItems = await itemCollection.find(query).toArray();
     res.set('Content-Type', 'application/json');
-    //res.set('Cache-Control', 'no-cache');
     res.status(200);
     res.json(allItems);
+})
+
+app.get("/edit", authenticate, async (req, res) => {
+    req.session.editItemID = req.query.itemID;
+    console.log(req.session.editItemID)
+    res.render('edit', {layout:false});
+})
+
+app.get("/getItem", authenticate, async (req, res) => {
+    const query = {_id:new ObjectId( req.session.editItemID )};
+    const itemToEdit = await itemCollection.findOne(query);
+    res.set('Content-Type', 'application/json');
+    res.status(200);
+    res.json(itemToEdit);
 })
 
 // assumes req.body takes form { _id:5d91fb30f3f81b282d7be0dd } etc.
@@ -176,6 +189,7 @@ app.delete("/deleteItem", authenticate, async (req, res) => {
     //res.set('Cache-Control', 'no-cache');
     res.json( result );
 })
+
 
 const getDate = function() {
     const date = new Date();
