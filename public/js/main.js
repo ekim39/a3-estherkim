@@ -85,7 +85,7 @@ const deleteItem = async function(idNum) {
     body: dataforDelete
   }).then( function(serverresponse) {
     if (serverresponse.status === 200) {
-      alert("Item successfully deleted!")
+      alert("Item deleted successfully!")
     } else {
       alert("Oops, something went wrong and the item was not deleted!")
     }
@@ -110,8 +110,24 @@ const login = async function(event) {
   }).then( function(serverresponse) {
       if (serverresponse.redirected) {
         window.location.href = serverresponse.url;
+        alert("You have logged in!")
       } else {
-        alert("Oops, something went wrong!");
+        alert("Login failed! Please try again.");
+      }
+  })
+}
+
+const logout = async function(event) {
+  event.preventDefault();
+
+  const response = await fetch( "/logout", {
+    method:"GET"
+  }).then( function(serverresponse) {
+      if (serverresponse.redirected) {
+        window.location.href = serverresponse.url;
+        alert("Logged out!");
+      } else {
+        alert("Oh uh! Something went wrong! Please try again.");
       }
   })
 }

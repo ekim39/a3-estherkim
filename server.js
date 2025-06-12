@@ -90,6 +90,7 @@ app.post( "/add", async (req, res) => {
     insertingItem = req.body;
     insertingItem.date = getDate();
     insertingItem.moneySaved = calcMoneySaved( parseFloat(insertingItem.price), parseFloat(insertingItem.discount) );
+    insertingItem.itemUser = req.session.userID;
     const result = await itemCollection.insertOne( insertingItem );
     res.set('Content-Type', 'application/json');
     res.status(200);
@@ -102,13 +103,13 @@ app.get( "/login", authenticate, async (req, res) => {
     } else {
         res.render('login.html', {msg:"Login to access spending list!", layout:false});
     } */
-    res.render('login', {msg:"Login to access spending list!", layout:false});
+    res.render('login', {layout:false});
 })
 
 app.get("/logout", async (req, res) => {
     req.session.loggedIn = false;
     req.session.userId = null;
-    res.render('login', {msg:"Logged out successfully!", layout:false});
+    res.render('login', {layout:false});
 })
 
 app.post( "/login", async (req, res) => {
@@ -121,16 +122,16 @@ app.post( "/login", async (req, res) => {
         res.redirect('index');
     } else {
         res.status(401);
-        res.render('login', {msg:"Login was unsuccessful, please try again!", layout:false});
+        res.render('login', {layout:false});
     }
 })
 
 app.get( "/index", authenticate, (req, res) => {
-    res.render('index', {msg:"You  have successfully logged in!", layout:false});
+    res.render('index', {layout:false});
 })
 
 app.get( "/", authenticate, (req, res) => {
-    res.render('index', {msg:"You  have successfully logged in!", layout:false});
+    res.render('index', {layout:false});
 })
 
 app.get( "/spending-list", authenticate, (req,res) => {
@@ -139,7 +140,7 @@ app.get( "/spending-list", authenticate, (req,res) => {
 })
 
 app.get("/obtainData.json", authenticate, async (req, res) => {
-    const query = {}
+    const query = {itemUser: req.session.userID};
     const allItems = await itemCollection.find(query).toArray();
     res.set('Content-Type', 'application/json');
     //res.set('Cache-Control', 'no-cache');
