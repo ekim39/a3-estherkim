@@ -108,20 +108,41 @@ app.get( "/login", authenticate, async (req, res) => {
 app.get("/logout", async (req, res) => {
     req.session.loggedIn = false;
     req.session.userId = null;
-    res.render('login', {layout:false});
+    res.redirect('login');
 })
 
 app.post( "/login", async (req, res) => {
-    const userExistsCount = await usersCollection.countDocuments({ username: req.body.username }, { password: req.body.password });
+    const userExistsCount = await usersCollection.countDocuments({ username: req.body.username, password: req.body.password });
     if (userExistsCount !== 0) {
         req.session.loggedIn = true;
-        const currentuser = usersCollection.find({ username: req.body.username }, { password: req.body.password }).limit(1);
-        req.session.userId = currentuser._id;
+        const currentuser = await usersCollection.findOne({ username: req.body.username, password: req.body.password });
+        req.session.userID = currentuser._id.toString();
         res.status(200);
         res.redirect('index');
     } else {
         res.status(401);
         res.render('login', {layout:false});
+    }
+})
+
+app.get( "/register", async (req, res) => {
+    if (req.session.loggedIn === true) {
+        res.render('index', {layout:false});
+    } else {
+        res.render('register', {layout:false});
+    }
+})
+
+app.post( "/register", async (req, res) => {
+    const userExistsCount = await usersCollection.countDocuments({ username: req.body.username });
+    if (userExistsCount === 0) {
+        insertingUser = req.body;
+        const result = await usersCollection.insertOne( insertingUser );
+        res.status(200);
+        res.redirect('login');
+    } else {
+        res.status(422);
+        res.render('register', {layout:false});
     }
 })
 

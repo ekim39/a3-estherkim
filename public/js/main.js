@@ -24,7 +24,6 @@ const submit = async function( event ) {
   }).then( function(serverresponse) {
       if (serverresponse.status === 200) {
         alert("Item was successfully added!");
-        console.log(serverresponse.body);
       } else {
         alert("Oops, something went wrong!");
       }
@@ -112,6 +111,7 @@ const login = async function(event) {
         window.location.href = serverresponse.url;
         alert("You have logged in!")
       } else {
+        window.location.reload(true);
         alert("Login failed! Please try again.");
       }
   })
@@ -124,10 +124,35 @@ const logout = async function(event) {
     method:"GET"
   }).then( function(serverresponse) {
       if (serverresponse.redirected) {
-        window.location.href = serverresponse.url;
+        //window.location.href = serverresponse.url;
         alert("Logged out!");
       } else {
         alert("Oh uh! Something went wrong! Please try again.");
+      }
+  })
+  //window.location.reload(true);
+}
+
+const register = async function(event) {
+  event.preventDefault();
+  
+  const regusername = document.querySelector( "#regusername" ),
+        regpassword = document.querySelector( "#regpassword" ),
+        json = { "username": regusername.value, "password": regpassword.value },
+        regbody = JSON.stringify( json )
+
+  const response = await fetch( "/register", {
+    method:"POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: regbody
+  }).then( function(serverresponse) {
+      if (serverresponse.redirected) {
+        window.location.href = serverresponse.url;
+        alert("Successfully created an account!")
+      } else {
+        alert("Username already exists! Please enter a different username.");
       }
   })
 }
@@ -140,6 +165,9 @@ window.onload = function() {
   } else if (window.location.pathname === "/login") {
     const loggingin = document.getElementById("forlogin");
     loggingin.onclick = login;
+  } else if (window.location.pathname === "/register") {
+    const registering = document.getElementById("forregister");
+    registering.onclick = register;
   }
   
 };
