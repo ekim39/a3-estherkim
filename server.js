@@ -35,7 +35,7 @@ function authenticate(req, res, next) {
         next();
     } else {
         res.status(403);
-        res.render('login', { msg:"Login failed, please try again", layout:false });
+        res.render('login', { layout:false });
     }
 }
 
@@ -98,12 +98,11 @@ app.post( "/add", async (req, res) => {
 })
 
 app.get( "/login", authenticate, async (req, res) => {
-    /* if (req.session.login === true) {
-        res.render('index', {msg:"You  have successfully logged in!", layout:false});
+    if (req.session.loggedIn === true) {
+        res.render('index', {layout:false});
     } else {
-        res.render('login.html', {msg:"Login to access spending list!", layout:false});
-    } */
-    res.render('login', {layout:false});
+        res.render('login', {layout:false});
+    }
 })
 
 app.get("/logout", async (req, res) => {
