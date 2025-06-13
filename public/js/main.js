@@ -120,6 +120,8 @@ const getItem = async function() {
     discount.value = data.discount;
     const note = document.getElementById("enote");
     note.value = data.note;
+    const editing = document.getElementById("update");
+    editing.onclick = update;
   })
 }
 
@@ -131,12 +133,12 @@ const editPage = async function(idNum) {
     if (serverresponse.status !== 200) {
       alert("Oops, something went wrong and the item cannot be edited!")
     } else {
-      getItem();
+      //getItem();
       window.location.href = serverresponse.url;  
+      //window.location.reload(true);
     }
   })
   console.log("Hello")
-  //window.location.reload(true);
 }
 
 const login = async function(event) {
@@ -204,8 +206,37 @@ const register = async function(event) {
   })
 }
 
+async function update( event ) {
+  event.preventDefault();
+  
+  const eitem = document.querySelector( "#eitem" ),
+        eprice = document.querySelector( "#eprice" ),
+        ediscount = document.querySelector( "#ediscount" ),
+        ecategory = document.querySelector( "#ecategory" ),
+        enote = document.querySelector( "#enote" ),
+        json = { "item": eitem.value, "price": eprice.value, "discount": ediscount.value, "category": ecategory.value, "note": enote.value },
+        ebody = JSON.stringify( json )
+
+  const response = await fetch( "/update", {
+    method:"POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: ebody
+  }).then( function(serverresponse) {
+      if (serverresponse.status === 200) {
+        alert("Item was updated!");
+        window.location.href = serverresponse.url;
+      } else {
+        alert("Oops, something went wrong!");
+        window.location.reload(true);
+      }
+  })
+}
+
 // when window is loaded this will run first
 window.onload = function() {
+  
   if (window.location.pathname === "/" || window.location.pathname === "/index") {
     const button = document.getElementById("sending");
     button.onclick = submit; // this will call the function submit upon the button being clicked
@@ -215,6 +246,9 @@ window.onload = function() {
   } else if (window.location.pathname === "/register") {
     const registering = document.getElementById("forregister");
     registering.onclick = register;
+  } else if (window.location.pathname.includes("edit")) {
+    const editing = document.getElementById("update");
+    editing.onclick = update;
   }
   
 };
