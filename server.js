@@ -4,6 +4,7 @@ const express    = require('express'),
       { MongoClient, ObjectId } = require("mongodb"),
       hbs = require('express-handlebars').engine,
       cookieSession = require('cookie-session'),
+      passport = require('passport-github'),
       app        = express()
 
 app.engine( "handlebars", hbs() );
@@ -20,6 +21,8 @@ app.use(cookieSession({
     loggedIn: false,
     maxAge: 24 * 60 * 60 * 1000 // 1 day
   }));
+
+app.use(passport.authenticate('session'));
 
 // middleware for authenticating users
 /* app.use( function (req, res, next) {
