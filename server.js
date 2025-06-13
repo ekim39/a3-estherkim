@@ -35,7 +35,7 @@ function authenticate(req, res, next) {
         next();
     } else {
         res.status(403);
-        res.render('login', { layout:false });
+        res.redirect('login');
     }
 }
 
@@ -97,7 +97,7 @@ app.post( "/add", async (req, res) => {
     res.json( result );
 })
 
-app.get( "/login", authenticate, async (req, res) => {
+app.get( "/login", async (req, res) => {
     if (req.session.loggedIn === true) {
         res.render('index', {layout:false});
     } else {
