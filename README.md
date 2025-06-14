@@ -27,4 +27,5 @@ Express Middleware Utilized:
   - Provide clear instructions - I added clear instructions for adding items into the spending list, specifying what should and should not be entered into the input field.
   - Ensure that interactive elements are easy to identify - I styled the navigation bar elements so that the color changes when the links are hovered over, active, or keyboard focused.
   - Provide sufficient contrast between foreground and background - I chose a light background with darker text colors. Anywhere where there is a dark background, I flipped it to have a lighter text color. For the navigation bar, I made sure that the hover, active, and keyboard focus colors would be darker than the original color because the text of the elements is a really light color.
+  - Associate a label with every form control - Every input has a label for all the forms. All the inputs for the forms have a label right above the box for the user input.
 
