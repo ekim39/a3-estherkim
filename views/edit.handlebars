@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <title>CS4241 Assignment 2</title>
+    <title>Edit Item - Spending Tracker</title>
     <meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1">
     <script src="js/main.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -14,41 +14,51 @@
     <link rel="icon" type="image/x-icon" href="/piggy-bank.ico">
   </head>
   <nav>
-    <a href="/index">Add Item to List</a>
-    <a href="/spending-list">Go to List</a>
-    <a href="/logout">Logout</a>
+    <a class="nava" href="/index">Add Item to List</a>
+    <a class="nava" href="/spending-list">Go to List</a>
+    <a class="nava" href="/logout">Logout</a>
   </nav>
   <body>
     <script>
-        window.onload = getItem;
+      window.onload = getItem;
     </script>
-    <h1>Edit Item</h1>
-    <form method="POST">
-      <label for="eitem">Name of item:</label>
-      <input type="text" id="eitem" value="">
+    <h1 class="col-lg-6 offset-lg-4">Edit Item</h1>
+    <form method="POST" class="col-lg-6 offset-lg-4">
+      <div data-mdb-input-init class="form-outline mb-4">
+        <label for="eitem">Name of item:</label>
+        <input type="text" id="eitem" value="" class="form-control w-50">
+      </div>
       <br>
-      <label for="eprice">Price paid for item:</label>
-      <input type="text" id="eprice" value="">
+      <div data-mdb-input-init class="form-outline mb-4">
+        <label for="eprice">Price paid for item (only input numbers and a '.', no '$'):</label>
+        <input type="text" id="eprice" value="" class="form-control w-50">
+      </div>
       <br>
-      <label for="ediscount">Any discount? (put in number from 1-100 terms of %)</label>
-      <input type="text" id="ediscount" value="0">
+      <div data-mdb-input-init class="form-outline mb-4">
+        <label for="ediscount">Any discount? (put in number from 1-100 terms of %)</label>
+        <input type="text" id="ediscount" value="0" class="form-control w-50">
+      </div>
       <br>
-      <label for="ecategory">Choose a category:</label>
-      <select id="ecategory" name="categories">
-        <option hidden disabled selected value> -- select an option -- </option>
-        <option value="general">General</option>
-        <option value="groceries">Groceries</option>
-        <option value="bills">Bills</option>
-        <option value="shopping">Shopping</option>
-        <option value="treats">Treats for Myself</option>
-        <option value="gifts">Gifts</option>
-        <option value="other">Other</option>
-      </select>
+      <div data-mdb-input-init class="form-outline mb-4">
+        <label for="ecategory">Choose a category:</label>
+        <select id="ecategory" name="categories">
+            <option hidden disabled selected value> -- select an option -- </option>
+            <option value="general">General</option>
+            <option value="groceries">Groceries</option>
+            <option value="bills">Bills</option>
+            <option value="shopping">Shopping</option>
+            <option value="treats">Treats for Myself</option>
+            <option value="gifts">Gifts</option>
+            <option value="other">Other</option>
+        </select>
+      </div>
       <br>
-      <label for="enote">Any notes:</label>
-      <input type="text" id="enote" value="">
+      <div data-mdb-input-init class="form-outline mb-4">
+        <label for="enote">Any notes:</label>
+        <input type="text" id="enote" value="" class="form-control w-50">
+      </div>
       <br>
-      <button id="update">Update</button>
+      <button id="update" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-block mb-4">Update</button>
     </form>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous"></script>
   </body>

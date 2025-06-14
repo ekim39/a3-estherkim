@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <title>CS4241 Assignment 2</title>
+    <title>Create Account - Spending Tracker</title>
     <meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1">
     <script src="js/main.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -14,18 +14,22 @@
     <link rel="icon" type="image/x-icon" href="/piggy-bank.ico">
   </head>
   <nav>
-    <a href="/login">Login</a>
+    <a class="nava" href="/login">Login</a>
   </nav>
   <body>
-    <h1>Register</h1>
-    <form action="/register" method="POST">
-      <label for="regusername">Enter a username:</label>
-      <input type="text" id="regusername">
+    <h1 class="col-lg-6 offset-lg-4">Register</h1>
+    <form action="/register" method="POST" class="col-lg-6 offset-lg-4">
+      <div data-mdb-input-init class="form-outline mb-4">
+        <label for="regusername">Enter a username:</label>
+        <input type="text" id="regusername" minlength="1" class="form-control w-50">
+      </div>
       <br>
-      <label for="regpassword">Enter a password:</label>
-      <input type="text" id="regpassword">
+      <div data-mdb-input-init class="form-outline mb-4">
+        <label for="regpassword">Enter a password:</label>
+        <input type="text" id="regpassword" minlength="1" class="form-control w-50">
+      </div>
       <br>
-      <input type="submit" id="forregister" value="Register">
+      <input type="submit" id="forregister" value="Register" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-block mb-4">
     </form>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous"></script>
   </body>

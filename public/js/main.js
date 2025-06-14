@@ -1,5 +1,6 @@
 // FRONT-END (CLIENT) JAVASCRIPT HERE
 
+// This will run when a new item is added into the spending list on index.html
 const submit = async function( event ) {
   // stop form submission from trying to load
   // a new .html page for displaying results...
@@ -64,7 +65,7 @@ const populateTable = async function() {
       const editbutton = document.createElement('button');
       editbutton.textContent = "Edit Item";
       editbutton.value = item._id;
-      editbutton.className = "editButton";
+      editbutton.className = "btn btn-secondary";
       editbutton.onclick = () => editPage(item._id);
       let forEditing = row.insertCell(7);
       forEditing.appendChild(editbutton);
@@ -72,7 +73,7 @@ const populateTable = async function() {
       const abutton = document.createElement('button');
       abutton.textContent = "Delete Item";
       abutton.value = item._id;
-      abutton.className = "deleteButton";
+      abutton.className = "btn btn-danger";
       abutton.onclick = () => deleteItem(item._id);
       let forDeleting = row.insertCell(8);
       forDeleting.appendChild(abutton);
@@ -133,12 +134,9 @@ const editPage = async function(idNum) {
     if (serverresponse.status !== 200) {
       alert("Oops, something went wrong and the item cannot be edited!")
     } else {
-      //getItem();
       window.location.href = serverresponse.url;  
-      //window.location.reload(true);
     }
   })
-  console.log("Hello")
 }
 
 const login = async function(event) {
@@ -190,20 +188,29 @@ const register = async function(event) {
         json = { "username": regusername.value, "password": regpassword.value },
         regbody = JSON.stringify( json )
 
-  const response = await fetch( "/register", {
-    method:"POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: regbody
-  }).then( function(serverresponse) {
-      if (serverresponse.redirected) {
-        window.location.href = serverresponse.url;
-        alert("Successfully created an account!")
-      } else {
-        alert("Username already exists! Please enter a different username.");
-      }
-  })
+  console.log(regusername.checkValidity());
+  if (!regusername.checkValidity()) {
+    alert("Username cannot be empty!");
+  } else if (!regpassword.checkValidity()) {
+    alert("Password cannot be empty!");
+  } else {
+    const response = await fetch( "/register", {
+      method:"POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: regbody
+    }).then( function(serverresponse) {
+        if (serverresponse.redirected) {
+          window.location.href = serverresponse.url;
+          alert("Successfully created an account!")
+        } else {
+          alert("Username already exists! Please enter a different username.");
+        }
+    })
+  }
+
+  
 }
 
 async function update( event ) {

@@ -40,17 +40,6 @@ passport.deserializeUser(function (id, cb) {
     cb(null, id)
 })
 
-
-
-/* app.use(cookieSession({
-    name: 'session',
-    keys: ['key2', 'key3'],
-    loggedIn: false,
-    maxAge: 24 * 60 * 60 * 1000 // 1 day
-  })); */
-
-//app.use(passport.authenticate('session'));
-
 // middleware for authenticating users
 /* app.use( function (req, res, next) {
     if (req.session.loggedIn === true) {
@@ -60,6 +49,7 @@ passport.deserializeUser(function (id, cb) {
         res.render('login', { msg:"Login failed, please try again", layout:false });
     }
 }) */
+
 function authenticate(req, res, next) {
     if (req.session.loggedIn === true) {
         next();
@@ -69,27 +59,14 @@ function authenticate(req, res, next) {
     }
 }
 
-// cookie middleware
-/* app.use( cookie({
-    name: "session",
-    keys: ["key1", "key2"]
-})) */
-
-
 const uri = `mongodb+srv://${process.env.USERNAME}:${process.env.PASS}@${process.env.HOST}/?retryWrites=true&w=majority&appName=a3-Webware`;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
-/* const client = new MongoClient(uri, {
-  serverApi: {
-    version: ServerApiVersion.v1,
-    strict: true,
-    deprecationErrors: true,
-  }
-}); */
 const client = new MongoClient(uri);
 
 let itemCollection;
 let usersCollection;
+let gitHubUserCollection;
 
 async function run() {
   try {
@@ -108,7 +85,7 @@ async function run() {
 run()
 
 app.use( (req,res,next) => {
-    if( itemCollection !== null ) {
+    if( itemCollection !== null && usersCollection !== null && gitHubUserCollection !== null ) {
         next()
     }else{
         res.status( 503 ).send()
@@ -212,7 +189,7 @@ app.get( "/register", async (req, res) => {
 
 app.post( "/register", async (req, res) => {
     const userExistsCount = await usersCollection.countDocuments({ username: req.body.username });
-    if (userExistsCount === 0) {
+    if (userExistsCount === 0 && req.body.username !== null && req.body.username !== "") {
         insertingUser = req.body;
         const result = await usersCollection.insertOne( insertingUser );
         res.status(200);
