@@ -40,16 +40,6 @@ passport.deserializeUser(function (id, cb) {
     cb(null, id)
 })
 
-// middleware for authenticating users
-/* app.use( function (req, res, next) {
-    if (req.session.loggedIn === true) {
-        next();
-    } else {
-        res.status(403);
-        res.render('login', { msg:"Login failed, please try again", layout:false });
-    }
-}) */
-
 function authenticate(req, res, next) {
     if (req.session.loggedIn === true) {
         next();
@@ -98,22 +88,6 @@ passport.use(new GitHubStrategy({
     callbackURL: "http://localhost:3001/auth/github/callback"
 },
 function(accessToken, refreshToken, profile, cb) {
-    //console.log(gitHubUserCollection);
-    /* gitHubUserCollection.findAndModify({
-        query: { githubId: profile.id },
-        update: {
-          $setOnInsert: { githubId: profile.id }
-        },
-        new: true,
-        upsert: true
-      }, function (err, user) {
-    return cb(err, user);
-    }) */
-
-    /* gitHubUserCollection.insertOne({ githubId: profile.id }, function (err, user) {
-        return cb(err, user);
-      }); */
-
     cb(null, profile);
 }
 ));
