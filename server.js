@@ -3,26 +3,53 @@ require('dotenv').config();
 const express    = require('express'),
       { MongoClient, ObjectId } = require("mongodb"),
       hbs = require('express-handlebars').engine,
-      cookieSession = require('cookie-session'),
-      passport = require('passport-github'),
+      session = require('express-session'),
+      passport = require('passport'),
       app        = express()
+const GitHubStrategy = require('passport-github').Strategy;
 
 app.engine( "handlebars", hbs() );
 app.set( "view engine", "handlebars" )
 app.set( "views", "./views" )
 
+
 app.use( express.static( 'public' ) )
 app.use( express.static( 'views'  ) )
 app.use( express.json() )
 
-app.use(cookieSession({
+app.use(session({
+    name: 'session',
+    secret: `${process.env.SECRET}`,
+    resave: false,
+    saveUninitialized: false,
+    loggedIn: false,
+    cookie: {
+        httpOnly: true,
+        secure: false,
+        maxAge: 24 * 60 * 60 * 1000 // 1 day
+    } 
+    
+  }));
+
+app.use( passport.initialize() )
+app.use( passport.session() )
+passport.serializeUser(function (user, cb) {
+    cb(null, user.id)
+})
+passport.deserializeUser(function (id, cb) {
+    cb(null, id)
+})
+
+
+
+/* app.use(cookieSession({
     name: 'session',
     keys: ['key2', 'key3'],
     loggedIn: false,
     maxAge: 24 * 60 * 60 * 1000 // 1 day
-  }));
+  })); */
 
-app.use(passport.authenticate('session'));
+//app.use(passport.authenticate('session'));
 
 // middleware for authenticating users
 /* app.use( function (req, res, next) {
@@ -70,6 +97,7 @@ async function run() {
     await client.connect()
     itemCollection = await client.db("spendingDatabase").collection("collection0")
     usersCollection = await client.db("spendingDatabase").collection("users")
+    gitHubUserCollection = await client.db("spendingDatabase").collection("gitHubUser")
     // Send a ping to confirm a successful connection
     await client.db("spendingDatabase").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
@@ -87,6 +115,50 @@ app.use( (req,res,next) => {
     }
 });
 
+passport.use(new GitHubStrategy({
+    clientID: `${process.env.GITHUB_CLIENT_ID}`,
+    clientSecret: `${process.env.GITHUB_CLIENT_SECRET}`,
+    callbackURL: "http://localhost:3001/auth/github/callback"
+},
+function(accessToken, refreshToken, profile, cb) {
+    //console.log(gitHubUserCollection);
+    /* gitHubUserCollection.findAndModify({
+        query: { githubId: profile.id },
+        update: {
+          $setOnInsert: { githubId: profile.id }
+        },
+        new: true,
+        upsert: true
+      }, function (err, user) {
+    return cb(err, user);
+    }) */
+
+    /* gitHubUserCollection.insertOne({ githubId: profile.id }, function (err, user) {
+        return cb(err, user);
+      }); */
+
+    cb(null, profile);
+}
+));
+
+// GitHub Authentication Login Routes
+app.get('/auth/github',
+  passport.authenticate('github'));
+
+app.get('/auth/github/callback', 
+  passport.authenticate('github', { failureRedirect: '/login' }),
+  async function (req, res) {
+    // Successful authentication, redirect home.
+    req.session.loggedIn = true;
+    const userExistsCount = await gitHubUserCollection.countDocuments({ githubId: req.user.id });
+    if (userExistsCount === 0) {
+        await gitHubUserCollection.insertOne({ githubId: req.user.id, username: req.user.username });
+    } 
+    const currentuser = await gitHubUserCollection.findOne({ githubId: req.user.id });
+    console.log(currentuser)
+    req.session.userID = currentuser._id.toString();
+    res.redirect('/');
+  });
 
 // adding item to database
 app.post( "/add", async (req, res) => {
