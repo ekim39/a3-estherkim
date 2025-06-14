@@ -1,4 +1,4 @@
-require('dotenv').config();
+require('dotenv').config(); // added so that process.env would work
 
 const express    = require('express'),
       { MongoClient, ObjectId } = require("mongodb"),
@@ -155,7 +155,6 @@ app.get('/auth/github/callback',
         await gitHubUserCollection.insertOne({ githubId: req.user.id, username: req.user.username });
     } 
     const currentuser = await gitHubUserCollection.findOne({ githubId: req.user.id });
-    console.log(currentuser)
     req.session.userID = currentuser._id.toString();
     res.redirect('/');
   });
@@ -181,9 +180,12 @@ app.get( "/login", async (req, res) => {
 })
 
 app.get("/logout", async (req, res) => {
+    req.logout(function(err) {
+        if (err) { return next(err); }
     req.session.loggedIn = false;
     req.session.userId = null;
     res.redirect('login');
+    })
 })
 
 app.post( "/login", async (req, res) => {
