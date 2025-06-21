@@ -1,6 +1,6 @@
 ## Spending Tracker v.2
 
-Glitch - http://a3-EstherKim.glitch.me
+Glitch - https://a3-estherkim.onrender.com
 
 **Summary**
 I used Express, MongoDB, and Bootstrap, along with Javascript and HTML, in this application to create a spending tracker. This is version 2 of the first spending tracker where the data is now kept in a separate database through MongoDB and the Express framework was utilized to help simplify the development of the web server. The user can create an account and log in to start adding items to their spending list. The user can edit and delete items they have added. Additionally, the data is persistent, so even after they log out and closer the website, their data will remain. The data of each user is marked so that only the current user's data will be displayed. Users can create an account by registering a username and password, and they can also login using a GitHub account. I chose these strategies because they seemed to be the most straightforward to implement.
