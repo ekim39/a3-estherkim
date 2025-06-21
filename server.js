@@ -1,12 +1,13 @@
-require('dotenv').config(); // added so that process.env would work
+import dotenv from 'dotenv'; // added so that process.env would work
+dotenv.config();
+import express from 'express';
+import { MongoClient, ObjectId } from "mongodb";
+import { engine as hbs } from 'express-handlebars';
+import session from 'express-session';
+import passport from 'passport';
+import { Strategy as GitHubStrategy } from 'passport-github';
 
-const express    = require('express'),
-      { MongoClient, ObjectId } = require("mongodb"),
-      hbs = require('express-handlebars').engine,
-      session = require('express-session'),
-      passport = require('passport'),
-      app        = express()
-const GitHubStrategy = require('passport-github').Strategy;
+const app = express();
 
 app.engine( "handlebars", hbs() );
 app.set( "view engine", "handlebars" )
@@ -40,6 +41,7 @@ passport.deserializeUser(function (id, cb) {
     cb(null, id)
 })
 
+// middleware for authenticating users
 function authenticate(req, res, next) {
     if (req.session.loggedIn === true) {
         next();
@@ -112,7 +114,7 @@ app.get('/auth/github/callback',
 
 // adding item to database
 app.post( "/add", async (req, res) => {
-    insertingItem = req.body;
+    let insertingItem = req.body;
     insertingItem.date = getDate();
     insertingItem.moneySaved = calcMoneySaved( parseFloat(insertingItem.price), parseFloat(insertingItem.discount) );
     insertingItem.itemUser = req.session.userID;
@@ -130,7 +132,7 @@ app.get( "/login", async (req, res) => {
     }
 })
 
-app.get("/logout", async (req, res) => {
+app.get("/logout", async (req, res, next) => {
     req.logout(function(err) {
         if (err) { return next(err); }
     req.session.loggedIn = false;
@@ -164,7 +166,7 @@ app.get( "/register", async (req, res) => {
 app.post( "/register", async (req, res) => {
     const userExistsCount = await usersCollection.countDocuments({ username: req.body.username });
     if (userExistsCount === 0 && req.body.username !== null && req.body.username !== "") {
-        insertingUser = req.body;
+        let insertingUser = req.body;
         const result = await usersCollection.insertOne( insertingUser );
         res.status(200);
         res.redirect('login');
@@ -209,7 +211,7 @@ app.get("/getItem", authenticate, async (req, res) => {
 })
 
 app.post("/update", authenticate, async (req, res) => {
-    updatingItem = req.body;
+    let updatingItem = req.body;
     updatingItem.moneySaved = calcMoneySaved( parseFloat(updatingItem.price), parseFloat(updatingItem.discount) );
     const result = await itemCollection.updateOne( 
         { _id: new ObjectId( req.session.editItemID ) },

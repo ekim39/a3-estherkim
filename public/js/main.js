@@ -7,7 +7,7 @@ const submit = async function( event ) {
   // this was the original browser behavior and still
   // remains to this day
   event.preventDefault();
-  
+
   const item = document.querySelector( "#item" ),
         price = document.querySelector( "#price" ),
         discount = document.querySelector( "#discount" ),
@@ -79,7 +79,7 @@ const populateTable = async function() {
       forDeleting.appendChild(abutton);
     });
   });
-  
+
 }
 
 const deleteItem = async function(idNum) {
@@ -141,7 +141,7 @@ const editPage = async function(idNum) {
 
 const login = async function(event) {
   event.preventDefault();
-  
+
   const username = document.querySelector( "#username" ),
         password = document.querySelector( "#password" ),
         json = { "username": username.value, "password": password.value },
@@ -182,7 +182,7 @@ const logout = async function(event) {
 
 const register = async function(event) {
   event.preventDefault();
-  
+
   const regusername = document.querySelector( "#regusername" ),
         regpassword = document.querySelector( "#regpassword" ),
         json = { "username": regusername.value, "password": regpassword.value },
@@ -210,12 +210,12 @@ const register = async function(event) {
     })
   }
 
-  
+
 }
 
 async function update( event ) {
   event.preventDefault();
-  
+
   const eitem = document.querySelector( "#eitem" ),
         eprice = document.querySelector( "#eprice" ),
         ediscount = document.querySelector( "#ediscount" ),
@@ -243,7 +243,7 @@ async function update( event ) {
 
 // when window is loaded this will run first
 window.onload = function() {
-  
+
   if (window.location.pathname === "/" || window.location.pathname === "/index") {
     const button = document.getElementById("sending");
     button.onclick = submit; // this will call the function submit upon the button being clicked
@@ -257,5 +257,5 @@ window.onload = function() {
     const editing = document.getElementById("update");
     editing.onclick = update;
   }
-  
+
 };
