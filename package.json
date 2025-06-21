@@ -3,6 +3,7 @@
   "version": "",
   "description": "",
   "author": "",
+  "type": "module",
   "scripts": {
     "start": "node server.js"
   },
